@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Quota Monitor</string>
+    <string name="title_activity_main">Quota Monitor</string>
+    <string name="package_name">com.fahim.quotamonitor</string>
+    <string name="custom_url_scheme">com.fahim.quotamonitor</string>
+</resources>

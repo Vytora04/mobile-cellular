@@ -80,7 +80,32 @@ npm start -- --check
 npm run login:browser
 ```
 
-### 4. Build Production
+### 4. Build Production (CLI)
 ```bash
 npm run build
 ```
+
+---
+
+## 📱 Aplikasi Mobile Android (Capacitor + Vite + Tailwind CSS)
+
+Project ini juga dilengkapi layer **Mobile-First Web Dashboard** di folder `./web` dan konfigurasi **Capacitor Android** (`com.fahim.quotamonitor` / **Quota Monitor**).
+
+### Menjalankan Preview Web Dashboard (Development)
+```bash
+npm run dev:web
+```
+Buka `http://localhost:5173` di browser.
+
+### Build & Sync ke Android APK
+```bash
+# 1. Build bundle web ke folder dist-web/
+npm run build:web
+
+# 2. Sinkronisasi aset web & plugin ke project native Android
+npm run cap:sync
+
+# 3. Buka project di Android Studio untuk build / run APK
+npm run cap:open
+```
+Di dalam Android Studio, pilih menu **Build > Build Bundle(s) / APK(s) > Build APK(s)** untuk menghasilkan file `app-debug.apk`.

@@ -1,6 +1,10 @@
 node_modules/
 dist/
+dist-web/
 .env
 *.log
 session_*.json
 sessions/
+android/.gradle/
+android/app/build/
+android/local.properties

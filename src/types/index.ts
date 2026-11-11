@@ -1,4 +1,4 @@
-export type OperatorName = 'telkomsel' | 'tri' | 'indosat';
+export type OperatorName = 'telkomsel' | 'tri' | 'indosat' | 'xl' | 'smartfren';
 
 export interface PackageQuota {
   name: string;

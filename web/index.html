@@ -7,19 +7,20 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
     <meta name="theme-color" content="#090d16" />
-    <title>Quota Monitor - Tri Bima+</title>
+    <title>Quota Monitor - Multi-Operator</title>
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body class="bg-[#090d16] text-slate-100 antialiased">
     <!-- Main Mobile Container -->
     <div class="mx-auto max-w-md min-h-dvh flex flex-col px-4 pt-6 pb-8">
       <!-- Top Header -->
-      <header class="flex items-center justify-between mb-6">
+      <header class="flex items-center justify-between mb-5">
         <div class="flex items-center gap-3">
           <div
-            class="w-10 h-10 rounded-2xl bg-gradient-to-br from-rose-500 to-purple-600 flex items-center justify-center shadow-lg shadow-rose-500/20 font-bold text-lg"
+            id="brand-logo"
+            class="w-10 h-10 rounded-2xl bg-gradient-to-br from-rose-500 to-purple-600 flex items-center justify-center shadow-lg font-extrabold text-sm tracking-tighter text-white transition-all"
           >
-            3
+            QM
           </div>
           <div>
             <h1 class="text-base font-bold tracking-tight text-white leading-tight">
@@ -31,7 +32,7 @@
                 class="w-2 h-2 rounded-full bg-emerald-400 live-dot"
               ></span>
               <span id="status-label" class="text-[11px] font-medium text-emerald-400">
-                Bima+ Live API
+                Multi-Operator Ready
               </span>
             </div>
           </div>
@@ -43,14 +44,14 @@
             id="btn-refresh"
             type="button"
             title="Refresh Data"
-            class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 active:scale-95 border border-slate-700/60 text-xs font-medium text-slate-200 transition"
+            class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 active:scale-95 border border-slate-700/60 text-xs font-medium text-slate-200 transition cursor-pointer"
           >
             <svg
               id="refresh-icon"
               class="w-3.5 h-3.5 text-rose-400"
               fill="none"
               stroke="currentColor"
-               stroke-width="2.2"
+              stroke-width="2.2"
               viewBox="0 0 24 24"
             >
               <path
@@ -71,22 +72,117 @@
       ></div>
 
       <!-- ========================================== -->
-      <!-- SCREEN 1: LOGIN SCREEN                     -->
+      <!-- SCREEN 1: LOGIN SCREEN (MULTI-OPERATOR)    -->
       <!-- ========================================== -->
       <main id="screen-login" class="flex-1 flex flex-col justify-center">
         <div
-          class="bg-slate-900/90 border border-slate-800/80 rounded-3xl p-6 shadow-2xl backdrop-blur-md"
+          class="bg-slate-900/90 border border-slate-800/80 rounded-3xl p-5 shadow-2xl backdrop-blur-md"
         >
-          <div class="mb-5">
+          <!-- Header & Mode Badge -->
+          <div class="flex items-start justify-between gap-2 mb-4">
+            <div>
+              <span
+                id="login-portal-badge"
+                class="inline-block px-2.5 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-300 text-[11px] font-semibold mb-1.5"
+              >
+                Portal Bima+ IOH
+              </span>
+              <h2 id="login-title" class="text-xl font-bold text-white">
+                Hubungkan Nomor Baru
+              </h2>
+            </div>
             <span
-              class="inline-block px-2.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[11px] font-semibold mb-2"
+              id="login-mode-badge"
+              class="px-2.5 py-1 rounded-xl border text-[10px] font-bold uppercase tracking-wider shrink-0 bg-emerald-500/15 border-emerald-500/30 text-emerald-300"
             >
-              Autentikasi Bima+ IOH
+              LIVE API
             </span>
-            <h2 class="text-xl font-bold text-white">Masuk Akun Tri</h2>
-            <p class="text-xs text-slate-400 mt-1">
-              Masukkan nomor Tri Anda untuk memantau sisa pulsa, masa aktif, dan kuota secara real-time.
-            </p>
+          </div>
+
+          <!-- Operator Selector Tabs -->
+          <div class="mb-4">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-xs font-medium text-slate-300">Pilih Operator</span>
+              <span
+                id="prefix-detect-badge"
+                class="hidden text-[10px] font-semibold text-emerald-400"
+              >
+                ✨ Terdeteksi Otomatis
+              </span>
+            </div>
+            <div class="grid grid-cols-6 gap-2" id="operator-tabs">
+              <button
+                type="button"
+                data-op="telkomsel"
+                class="op-tab-btn col-span-2 flex flex-col items-center justify-center p-2.5 rounded-2xl border border-slate-800 bg-slate-950/60 hover:bg-slate-800/70 transition cursor-pointer"
+              >
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                  <span class="text-xs font-bold text-white">Telkomsel</span>
+                </div>
+                <span class="text-[9px] font-semibold text-emerald-400 mt-0.5">
+                  LIVE API
+                </span>
+              </button>
+
+              <button
+                type="button"
+                data-op="tri"
+                class="op-tab-btn col-span-2 flex flex-col items-center justify-center p-2.5 rounded-2xl border border-rose-500 bg-rose-500/10 transition cursor-pointer"
+              >
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                  <span class="text-xs font-bold text-white">Tri (3)</span>
+                </div>
+                <span class="text-[9px] font-semibold text-emerald-400 mt-0.5">
+                  LIVE API
+                </span>
+              </button>
+
+              <button
+                type="button"
+                data-op="indosat"
+                class="op-tab-btn col-span-2 flex flex-col items-center justify-center p-2.5 rounded-2xl border border-slate-800 bg-slate-950/60 hover:bg-slate-800/70 transition cursor-pointer"
+              >
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                  <span class="text-xs font-bold text-white">Indosat</span>
+                </div>
+                <span class="text-[9px] font-semibold text-emerald-400 mt-0.5">
+                  LIVE API
+                </span>
+              </button>
+
+              <button
+                type="button"
+                data-op="xl"
+                class="op-tab-btn col-span-3 flex flex-col items-center justify-center p-2.5 rounded-2xl border border-slate-800/60 bg-slate-950/30 opacity-40 hover:opacity-60 transition cursor-not-allowed"
+                title="XL Axiata saat ini belum dapat dikonfigurasi (Unavailable)"
+              >
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-slate-600"></span>
+                  <span class="text-xs font-bold text-slate-400">XL Axiata</span>
+                </div>
+                <span class="text-[9px] font-semibold text-slate-500 mt-0.5 tracking-wider">
+                  UNAVAILABLE
+                </span>
+              </button>
+
+              <button
+                type="button"
+                data-op="smartfren"
+                class="op-tab-btn col-span-3 flex flex-col items-center justify-center p-2.5 rounded-2xl border border-slate-800/60 bg-slate-950/30 opacity-40 hover:opacity-60 transition cursor-not-allowed"
+                title="Smartfren saat ini belum tersedia (Unavailable)"
+              >
+                <div class="flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-slate-600"></span>
+                  <span class="text-xs font-bold text-slate-400">Smartfren</span>
+                </div>
+                <span class="text-[9px] font-semibold text-slate-500 mt-0.5 tracking-wider">
+                  UNAVAILABLE
+                </span>
+              </button>
+            </div>
           </div>
 
           <!-- Step 1: Nomor HP & Minta OTP -->
@@ -94,9 +190,10 @@
             <div>
               <label
                 for="input-phone"
+                id="label-phone"
                 class="block text-xs font-medium text-slate-300 mb-1.5"
               >
-                Nomor HP Tri
+                Nomor HP Tri (3 Indonesia)
               </label>
               <div class="flex gap-2">
                 <input
@@ -114,6 +211,9 @@
                   Minta OTP
                 </button>
               </div>
+              <p class="text-[11px] text-slate-500 mt-1" id="prefix-hint">
+                Ketik 4 digit awal (0812 / 0895 / 0857 / 0818 / 0882) untuk deteksi otomatis operator.
+              </p>
             </div>
 
             <!-- Step 2: Input 6 Digit OTP -->
@@ -138,14 +238,14 @@
             <button
               id="btn-verify-otp"
               type="button"
-              class="w-full py-3 rounded-xl bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 active:scale-[0.99] text-sm font-bold text-white shadow-lg shadow-rose-500/25 transition cursor-pointer"
+              class="w-full py-3 rounded-xl bg-gradient-to-r from-rose-500 to-purple-600 hover:opacity-95 active:scale-[0.99] text-sm font-bold text-white shadow-lg transition cursor-pointer"
             >
               Verifikasi & Masuk
             </button>
           </div>
 
           <!-- Divider: Opsi Login dengan Token Sesi (Tanpa OTP) -->
-          <div class="mt-6 pt-5 border-t border-slate-800/80">
+          <div class="mt-5 pt-4 border-t border-slate-800/80">
             <details class="group">
               <summary
                 class="flex items-center justify-between text-xs font-medium text-slate-400 cursor-pointer list-none"
@@ -171,11 +271,11 @@
             </details>
           </div>
 
-          <!-- Tombol Kembali ke Dashboard (Jika sudah ada akun lain yang login) -->
+          <!-- Tombol Kembali ke Dashboard (Jika sudah ada kartu terhubung) -->
           <button
             id="btn-cancel-login"
             type="button"
-            class="hidden w-full mt-3 py-2.5 rounded-xl bg-slate-800/50 hover:bg-slate-800 text-xs font-medium text-slate-400 transition"
+            class="hidden w-full mt-3 py-2.5 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-xs font-semibold text-slate-300 transition cursor-pointer"
           >
             ← Kembali ke Dashboard
           </button>
@@ -183,74 +283,94 @@
       </main>
 
       <!-- ========================================== -->
-      <!-- SCREEN 2: DASHBOARD SCREEN                 -->
+      <!-- SCREEN 2: DASHBOARD SCREEN (MULTI-NOMOR)   -->
       <!-- ========================================== -->
       <main id="screen-dashboard" class="hidden flex-1 flex flex-col space-y-4">
-        <!-- Account Switcher Bar -->
-        <div
-          class="flex items-center justify-between bg-slate-900/80 border border-slate-800/80 rounded-2xl px-3.5 py-2.5"
+        <!-- Multi-SIM Tracker Header & Card Strip -->
+        <section
+          class="bg-slate-900/85 border border-slate-800/80 rounded-3xl p-3.5 shadow-md"
         >
-          <div class="flex items-center gap-2 min-w-0 flex-1">
-            <span class="w-2 h-2 rounded-full bg-rose-500 shrink-0"></span>
-            <select
-              id="select-account"
-              class="bg-transparent text-sm font-bold text-white focus:outline-none truncate cursor-pointer pr-2"
-            ></select>
-          </div>
-          <div class="flex items-center gap-1.5">
+          <div class="flex items-center justify-between mb-2.5 px-1">
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-bold text-slate-200">
+                Daftar Kartu Terhubung
+              </span>
+              <span
+                id="sim-count-badge"
+                class="px-2 py-0.5 rounded-full bg-slate-800 text-[10px] font-bold text-slate-300"
+              >
+                1 SIM
+              </span>
+            </div>
             <button
               id="btn-add-account"
               type="button"
-              class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-semibold text-rose-400 border border-slate-700 transition"
+              class="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-[11px] font-bold text-rose-300 transition cursor-pointer"
             >
-              + Nomor
-            </button>
-            <button
-              id="btn-logout"
-              type="button"
-              title="Hapus Sesi Nomor Ini"
-              class="px-2.5 py-1 rounded-lg bg-slate-800/60 hover:bg-rose-950/60 text-[11px] font-medium text-slate-400 hover:text-rose-300 border border-slate-800 transition"
-            >
-              Keluar
+              <span>+ Tambah Nomor Lain</span>
             </button>
           </div>
-        </div>
+
+          <!-- Horizontal Multi-SIM Pills -->
+          <div
+            id="sim-cards-strip"
+            class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar"
+          >
+            <!-- Diisi dinamis oleh main.ts -->
+          </div>
+        </section>
 
         <!-- Card 1: Saldo Pulsa & Masa Aktif Kartu -->
         <section
-          class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-rose-600 via-purple-700 to-indigo-900 p-5 shadow-xl shadow-purple-950/40"
+          id="hero-balance-card"
+          class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-rose-600 via-purple-700 to-indigo-900 p-5 shadow-xl transition-all"
         >
           <div class="relative z-10">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-medium text-rose-100/80">
-                Sisa Pulsa Utama
-              </span>
+              <div class="flex items-center gap-2">
+                <span
+                  id="hero-op-badge"
+                  class="px-2.5 py-0.5 rounded-lg bg-white/15 backdrop-blur-sm text-[11px] font-extrabold uppercase tracking-wider text-white"
+                >
+                  TRI (3)
+                </span>
+                <span
+                  id="hero-phone-number"
+                  class="text-xs font-mono font-semibold text-white/90"
+                >
+                  0895xxxxxxxx
+                </span>
+              </div>
               <span
                 id="badge-token-ttl"
-                class="px-2 py-0.5 rounded-full bg-black/25 backdrop-blur-sm text-[10px] font-medium text-emerald-300"
+                class="px-2.5 py-0.5 rounded-full bg-black/30 backdrop-blur-sm text-[10px] font-semibold text-emerald-300"
               >
-                Sesi Aktif
+                LIVE API
               </span>
             </div>
-            <div
-              id="val-balance"
-              class="text-3xl font-extrabold tracking-tight text-white mt-1"
-            >
-              Rp 0
+
+            <div class="mt-3">
+              <span class="text-xs font-medium text-white/75">Sisa Pulsa Utama</span>
+              <div
+                id="val-balance"
+                class="text-3xl font-extrabold tracking-tight text-white mt-0.5"
+              >
+                Rp 0
+              </div>
             </div>
 
             <div
               class="mt-4 pt-3.5 border-t border-white/15 flex items-center justify-between text-xs"
             >
               <div>
-                <span class="text-rose-100/70 block text-[11px]">Masa Aktif Kartu</span>
+                <span class="text-white/70 block text-[11px]">Masa Aktif Kartu</span>
                 <span id="val-active-until" class="font-bold text-white text-sm">
                   -
                 </span>
               </div>
               <div class="text-right">
-                <span class="text-rose-100/70 block text-[11px]">Pembaruan Terakhir</span>
-                <span id="val-updated-at" class="font-semibold text-rose-100 text-xs">
+                <span class="text-white/70 block text-[11px]">Pembaruan Terakhir</span>
+                <span id="val-updated-at" class="font-semibold text-white/95 text-xs">
                   -
                 </span>
               </div>
@@ -303,12 +423,29 @@
             <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400">
               Rincian Paket Aktif
             </h3>
-            <span
-              id="val-pkg-count"
-              class="text-[11px] font-medium text-slate-400"
-            >
-              0 Paket
-            </span>
+            <div class="flex items-center gap-3">
+              <span
+                id="val-pkg-count"
+                class="text-[11px] font-medium text-slate-400"
+              >
+                0 Paket
+              </span>
+              <button
+                id="btn-set-first"
+                type="button"
+                class="text-[11px] font-semibold text-amber-400/90 hover:text-amber-300 transition cursor-pointer flex items-center gap-1"
+                title="Pindahkan nomor ini ke urutan paling pertama (#1)"
+              >
+                ⭐ Taruh di Urutan #1
+              </button>
+              <button
+                id="btn-logout"
+                type="button"
+                class="text-[11px] font-semibold text-rose-400/80 hover:text-rose-300 transition cursor-pointer"
+              >
+                Hapus Nomor Ini
+              </button>
+            </div>
           </div>
 
           <div id="packages-list" class="space-y-3">

@@ -6,8 +6,11 @@
   "scripts": {
     "dev": "tsx src/index.ts",
     "dev:web": "vite",
+    "app": "tsx src/open_app.ts",
     "login": "tsx src/index.ts --login",
     "login:browser": "tsx src/browser_login.ts",
+    "login:telkomsel": "tsx src/browser_login_telkomsel.ts",
+    "login:indosat": "tsx src/browser_login_indosat.ts",
     "build": "tsc",
     "build:web": "vite build",
     "cap:sync": "vite build && cap sync android",

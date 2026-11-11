@@ -5,6 +5,8 @@ import { OperatorAdapter, QuotaReport } from './types/index.js';
 import { TelkomselAdapter } from './adapters/telkomsel.js';
 import { TriAdapter } from './adapters/tri.js';
 import { IndosatAdapter } from './adapters/indosat.js';
+import { XlAdapter } from './adapters/xl.js';
+import { SmartfrenAdapter } from './adapters/smartfren.js';
 import { formatRupiah, formatPhoneNumber, formatDate } from './utils/format.js';
 import { getSessionDetails } from './utils/session.js';
 import {
@@ -46,6 +48,14 @@ function buildAdapters(): OperatorAdapter[] {
     } else if (acc.operator === 'indosat') {
       adapters.push(
         new IndosatAdapter(acc.phoneNumber, process.env.INDOSAT_ACCESS_TOKEN, isMock)
+      );
+    } else if (acc.operator === 'xl') {
+      adapters.push(
+        new XlAdapter(acc.phoneNumber, process.env.XL_ACCESS_TOKEN, isMock)
+      );
+    } else if (acc.operator === 'smartfren') {
+      adapters.push(
+        new SmartfrenAdapter(acc.phoneNumber, process.env.SMARTFREN_ACCESS_TOKEN, isMock)
       );
     }
   }
@@ -148,20 +158,24 @@ async function displayQuotaReport(): Promise<void> {
 async function handleAddNumber(rl: readline.Interface): Promise<void> {
   console.log('\n--- [TAMBAH NOMOR BARU] ---');
   console.log('Pilih Operator:');
-  console.log('1. Tri (3 / Bima+)');
-  console.log('2. Telkomsel (MyTelkomsel)');
-  console.log('3. Indosat (myIM3)');
+  console.log('1. Tri (3 / Bima+) [LIVE API]');
+  console.log('2. Telkomsel (MyTelkomsel) [MOCK MODE]');
+  console.log('3. Indosat (myIM3) [MOCK MODE]');
+  console.log('4. XL Axiata (myXL) [LIVE API]');
+  console.log('5. Smartfren (MySmartfren) [MOCK MODE]');
   console.log('0. Batal');
 
-  const opChoice = await rl.question('\nPilih operator [0-3]: ');
-  let operator: 'telkomsel' | 'tri' | 'indosat' | null = null;
+  const opChoice = await rl.question('\nPilih operator [0-5]: ');
+  let operator: 'telkomsel' | 'tri' | 'indosat' | 'xl' | 'smartfren' | null = null;
 
   if (opChoice.trim() === '1') operator = 'tri';
   else if (opChoice.trim() === '2') operator = 'telkomsel';
   else if (opChoice.trim() === '3') operator = 'indosat';
+  else if (opChoice.trim() === '4') operator = 'xl';
+  else if (opChoice.trim() === '5') operator = 'smartfren';
   else return;
 
-  const phoneInput = await rl.question(`Masukkan nomor ${operator.toUpperCase()} (cth: 0895... / 0812...): `);
+  const phoneInput = await rl.question(`Masukkan nomor ${operator.toUpperCase()} (cth: 0895... / 0818... / 0882...): `);
   const clean = formatPhoneNumber(phoneInput.trim());
 
   if (!clean || clean.length < 9) {
@@ -172,12 +186,32 @@ async function handleAddNumber(rl: readline.Interface): Promise<void> {
   const key = addRegisteredAccount(operator, clean);
   console.log(`✅ Nomor ${clean} (${operator.toUpperCase()}) berhasil ditambahkan ke ${key}!\n`);
 
-  // Jika Tri, tawarkan opsi login langsung
+  // Jika Tri, tawarkan opsi login langsung via browser
   if (operator === 'tri') {
-    const loginNow = await rl.question('Buka browser sekarang untuk langsung login akun ini? (Y/n): ');
+    const loginNow = await rl.question('Buka browser sekarang untuk langsung login akun Tri ini? (Y/n): ');
     if (loginNow.trim().toLowerCase() !== 'n') {
       console.log('🚀 Membuka browser...');
       await startBrowserLogin(clean);
+    }
+  } else if (operator === 'xl' && !getIsMock()) {
+    const loginNow = await rl.question('Kirim kode OTP ke nomor XL sekarang? (Y/n): ');
+    if (loginNow.trim().toLowerCase() !== 'n') {
+      const adapter = new XlAdapter(clean, undefined, false);
+      process.stdout.write(`⏳ Mengirim kode OTP ke nomor XL ${clean}... `);
+      const reqRes = await adapter.loginWithOtp(clean);
+      if (reqRes.success) {
+        console.log('✅ ' + reqRes.message);
+        const otpCode = await rl.question('👉 Masukkan 6 digit kode OTP XL dari SMS: ');
+        process.stdout.write(`⏳ Memverifikasi OTP XL... `);
+        const valRes = await adapter.loginWithOtp(clean, otpCode.trim());
+        if (valRes.success) {
+          console.log('🎉 ' + valRes.message);
+        } else {
+          console.log('❌ ' + valRes.message);
+        }
+      } else {
+        console.log('❌ Gagal: ' + reqRes.message);
+      }
     }
   }
 }

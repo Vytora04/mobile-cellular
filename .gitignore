@@ -3,8 +3,12 @@ dist/
 dist-web/
 .env
 *.log
+*.xapk
+tools/
 session_*.json
 sessions/
 android/.gradle/
 android/app/build/
 android/local.properties
+logs/
+lib/

@@ -5,9 +5,10 @@ import { clearPendingOtpSession } from './session.js';
 
 const ENV_FILE_PATH = path.resolve(process.cwd(), '.env');
 const SESSION_FILE_PATH = path.resolve(process.cwd(), 'session_tri.json');
+const SESSION_XL_FILE_PATH = path.resolve(process.cwd(), 'session_xl.json');
 
 export interface RegisteredAccount {
-  operator: 'telkomsel' | 'tri' | 'indosat';
+  operator: 'telkomsel' | 'tri' | 'indosat' | 'xl' | 'smartfren';
   phoneNumber: string;
   envKey: string;
   label: string;
@@ -108,13 +109,35 @@ export function getRegisteredAccounts(): RegisteredAccount[] {
     });
   }
 
+  // 4. XL Axiata
+  const xlPhone = process.env.XL_PHONE_NUMBER;
+  if (xlPhone && xlPhone.trim()) {
+    accounts.push({
+      operator: 'xl',
+      phoneNumber: formatPhoneNumber(xlPhone),
+      envKey: 'XL_PHONE_NUMBER',
+      label: 'XL Axiata',
+    });
+  }
+
+  // 5. Smartfren
+  const smartPhone = process.env.SMARTFREN_PHONE_NUMBER;
+  if (smartPhone && smartPhone.trim()) {
+    accounts.push({
+      operator: 'smartfren',
+      phoneNumber: formatPhoneNumber(smartPhone),
+      envKey: 'SMARTFREN_PHONE_NUMBER',
+      label: 'Smartfren',
+    });
+  }
+
   return accounts;
 }
 
 /**
  * Menambahkan nomor baru ke .env
  */
-export function addRegisteredAccount(operator: 'telkomsel' | 'tri' | 'indosat', phone: string): string {
+export function addRegisteredAccount(operator: 'telkomsel' | 'tri' | 'indosat' | 'xl' | 'smartfren', phone: string): string {
   const cleanPhone = formatPhoneNumber(phone);
 
   if (operator === 'telkomsel') {
@@ -123,6 +146,12 @@ export function addRegisteredAccount(operator: 'telkomsel' | 'tri' | 'indosat', 
   } else if (operator === 'indosat') {
     updateEnvVariable('INDOSAT_PHONE_NUMBER', cleanPhone);
     return 'INDOSAT_PHONE_NUMBER';
+  } else if (operator === 'xl') {
+    updateEnvVariable('XL_PHONE_NUMBER', cleanPhone);
+    return 'XL_PHONE_NUMBER';
+  } else if (operator === 'smartfren') {
+    updateEnvVariable('SMARTFREN_PHONE_NUMBER', cleanPhone);
+    return 'SMARTFREN_PHONE_NUMBER';
   } else {
     // Operator Tri: cek slot pertama yang kosong
     if (!process.env.TRI_PHONE_NUMBER && !process.env.TRI_1_PHONE_NUMBER) {
@@ -162,6 +191,17 @@ export function removeRegisteredAccount(account: RegisteredAccount): void {
         }
       }
       clearPendingOtpSession(account.phoneNumber);
+    } catch {}
+  } else if (account.operator === 'xl') {
+    try {
+      if (fs.existsSync(SESSION_XL_FILE_PATH)) {
+        const raw = fs.readFileSync(SESSION_XL_FILE_PATH, 'utf-8');
+        const sessions = JSON.parse(raw);
+        if (sessions[account.phoneNumber]) {
+          delete sessions[account.phoneNumber];
+          fs.writeFileSync(SESSION_XL_FILE_PATH, JSON.stringify(sessions, null, 2), 'utf-8');
+        }
+      }
     } catch {}
   }
 }

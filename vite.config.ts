@@ -7,8 +7,57 @@ function localSessionsPlugin(): Plugin {
   return {
     name: 'local-sessions-plugin',
     configureServer(server) {
-      server.middlewares.use('/api/local-sessions', (_req, res) => {
+      server.middlewares.use('/api/local-sessions', (req, res) => {
         try {
+          const urlObj = new URL(req.url || '', 'http://localhost');
+          const phoneParam = urlObj.searchParams.get('phone');
+
+          if (req.method === 'DELETE' && phoneParam) {
+            const clean = phoneParam.replace(/\D/g, '');
+            const msisdn62 = clean.startsWith('0') ? '62' + clean.slice(1) : clean;
+            const phone08 = clean.startsWith('62') ? '0' + clean.slice(2) : clean;
+
+            // Delete from session_indosat.json
+            const indosatPath = path.resolve(__dirname, 'session_indosat.json');
+            if (fs.existsSync(indosatPath)) {
+              try {
+                const raw = JSON.parse(fs.readFileSync(indosatPath, 'utf-8'));
+                if (raw.phoneNumber === msisdn62 || raw.phoneNumber === phone08) {
+                  fs.unlinkSync(indosatPath);
+                }
+              } catch {}
+            }
+
+            // Delete from session_tri.json
+            const triPath = path.resolve(__dirname, 'session_tri.json');
+            if (fs.existsSync(triPath)) {
+              try {
+                const raw = JSON.parse(fs.readFileSync(triPath, 'utf-8'));
+                let changed = false;
+                if (raw[phone08]) {
+                  delete raw[phone08];
+                  changed = true;
+                }
+                if (raw[msisdn62]) {
+                  delete raw[msisdn62];
+                  changed = true;
+                }
+                if (changed) {
+                  fs.writeFileSync(triPath, JSON.stringify(raw, null, 2), 'utf-8');
+                }
+              } catch {}
+            }
+
+            res.setHeader('Content-Type', 'application/json');
+            res.end(
+              JSON.stringify({
+                success: true,
+                message: `Session for ${phoneParam} deleted from disk`,
+              })
+            );
+            return;
+          }
+
           const sessions: Record<string, any> = {};
 
           // Check Indosat

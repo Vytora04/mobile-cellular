@@ -12,3 +12,4 @@ android/app/build/
 android/local.properties
 logs/
 lib/
+myXL_extracted/

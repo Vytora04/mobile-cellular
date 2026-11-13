@@ -144,6 +144,7 @@ export interface MobileAccountSession {
 
 const STORAGE_SESSIONS_KEY = 'qm_multi_sessions_v2';
 const STORAGE_SESSIONS_ORDER_KEY = 'qm_sessions_order_v2';
+const STORAGE_DELETED_KEY = 'qm_deleted_sessions_v1';
 const STORAGE_LEGACY_TRI_KEY = 'qm_tri_sessions_v1';
 const STORAGE_ACTIVE_PHONE_KEY = 'qm_active_phone_v2';
 const STORAGE_PENDING_OTP_KEY = 'qm_pending_otp_v2';
@@ -393,8 +394,33 @@ export function moveSessionOrder(
   return current;
 }
 
+export function getDeletedSessions(): string[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_DELETED_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveDeletedSession(phone: string): void {
+  const clean = formatPhoneNumber(phone);
+  const deleted = getDeletedSessions();
+  if (!deleted.includes(clean)) {
+    deleted.push(clean);
+    localStorage.setItem(STORAGE_DELETED_KEY, JSON.stringify(deleted));
+  }
+}
+
+export function clearDeletedSession(phone: string): void {
+  const clean = formatPhoneNumber(phone);
+  const deleted = getDeletedSessions().filter((p) => p !== clean);
+  localStorage.setItem(STORAGE_DELETED_KEY, JSON.stringify(deleted));
+}
+
 export function saveSession(session: MobileAccountSession): void {
   const clean = formatPhoneNumber(session.phoneNumber);
+  clearDeletedSession(clean);
   const all = getAllSessions();
   all[clean] = {
     ...session,
@@ -421,8 +447,15 @@ export function removeSession(phone: string): void {
   const order = getSessionOrder().filter((p) => p !== clean);
   saveSessionOrder(order);
 
+  saveDeletedSession(clean);
+
   if (getActivePhone() === clean) {
     localStorage.setItem(STORAGE_ACTIVE_PHONE_KEY, order[0] || '');
+  }
+
+  // Hapus dari disk jika dev server aktif
+  if (!Capacitor.isNativePlatform()) {
+    fetch(`/api/local-sessions?phone=${clean}`, { method: 'DELETE' }).catch(() => {});
   }
 }
 
@@ -452,9 +485,11 @@ export async function syncSavedSessionsFromDisk(): Promise<boolean> {
     if (!localSessions || typeof localSessions !== 'object') return false;
 
     const all = getAllSessions();
+    const deleted = getDeletedSessions();
     let hasNew = false;
     for (const [phone, sess] of Object.entries<MobileAccountSession>(localSessions)) {
       const clean = formatPhoneNumber(phone);
+      if (deleted.includes(clean)) continue;
       if (!all[clean] && sess.tokenId) {
         all[clean] = {
           ...sess,

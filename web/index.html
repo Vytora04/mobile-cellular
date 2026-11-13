@@ -441,9 +441,10 @@
               <button
                 id="btn-logout"
                 type="button"
-                class="text-[11px] font-semibold text-rose-400/80 hover:text-rose-300 transition cursor-pointer"
+                class="text-[11px] font-semibold text-rose-400/80 hover:text-rose-300 transition cursor-pointer flex items-center gap-1"
+                title="Hapus nomor aktif ini dari daftar"
               >
-                Hapus Nomor Ini
+                🗑️ Hapus Nomor Ini
               </button>
             </div>
           </div>
@@ -453,6 +454,50 @@
           </div>
         </section>
       </main>
+    </div>
+
+    <!-- Modal Konfirmasi Hapus Nomor -->
+    <div
+      id="modal-delete-confirm"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm transition-opacity duration-200 hidden opacity-0"
+    >
+      <div
+        id="modal-delete-card"
+        class="w-full max-w-sm rounded-2xl border border-slate-800 bg-slate-900/95 p-6 shadow-2xl transition-all duration-200 transform scale-95"
+      >
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white">Hapus Nomor SIM?</h3>
+            <p id="modal-delete-phone" class="text-xs font-mono font-semibold text-rose-400 mt-0.5">08xxxxxxxxxx</p>
+          </div>
+        </div>
+
+        <p class="text-xs text-slate-400 leading-relaxed mb-5">
+          Nomor ini beserta token sesi aktifnya akan dihapus dari aplikasi. Anda harus memverifikasi ulang dengan SMS OTP jika ingin menghubungkannya kembali nanti.
+        </p>
+
+        <div class="flex items-center gap-2.5">
+          <button
+            id="btn-cancel-delete"
+            type="button"
+            class="flex-1 py-2.5 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700/80 text-xs font-semibold text-slate-300 transition cursor-pointer"
+          >
+            Batal
+          </button>
+          <button
+            id="btn-confirm-delete"
+            type="button"
+            class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-xs font-bold text-white shadow-lg shadow-rose-900/40 transition cursor-pointer"
+          >
+            Ya, Hapus
+          </button>
+        </div>
+      </div>
     </div>
 
     <script type="module" src="./main.ts"></script>

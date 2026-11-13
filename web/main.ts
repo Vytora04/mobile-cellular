@@ -67,6 +67,36 @@ const barTotalQuota = document.getElementById('bar-total-quota') as HTMLElement;
 const valPkgCount = document.getElementById('val-pkg-count') as HTMLElement;
 const packagesList = document.getElementById('packages-list') as HTMLElement;
 
+// Delete Modal Elements
+const modalDeleteConfirm = document.getElementById('modal-delete-confirm') as HTMLElement;
+const modalDeleteCard = document.getElementById('modal-delete-card') as HTMLElement;
+const modalDeletePhone = document.getElementById('modal-delete-phone') as HTMLElement;
+const btnCancelDelete = document.getElementById('btn-cancel-delete') as HTMLButtonElement;
+const btnConfirmDelete = document.getElementById('btn-confirm-delete') as HTMLButtonElement;
+
+let pendingDeletePhone: string | null = null;
+
+function openDeleteConfirmModal(phone: string): void {
+  pendingDeletePhone = phone;
+  modalDeletePhone.textContent = phone;
+  modalDeleteConfirm.classList.remove('hidden');
+  requestAnimationFrame(() => {
+    modalDeleteConfirm.classList.remove('opacity-0');
+    modalDeleteCard.classList.remove('scale-95');
+    modalDeleteCard.classList.add('scale-100');
+  });
+}
+
+function closeDeleteConfirmModal(): void {
+  pendingDeletePhone = null;
+  modalDeleteConfirm.classList.add('opacity-0');
+  modalDeleteCard.classList.remove('scale-100');
+  modalDeleteCard.classList.add('scale-95');
+  setTimeout(() => {
+    modalDeleteConfirm.classList.add('hidden');
+  }, 200);
+}
+
 let selectedOperator: OperatorType = 'tri';
 let otpCooldownTimer: number | null = null;
 
@@ -258,15 +288,20 @@ function renderSimCardsStrip(): void {
         </div>
         <div class="text-xs font-mono font-semibold">${phone}</div>
       </div>
-      <div class="flex items-center gap-0.5 opacity-60 group-hover:opacity-100 transition">
+      <div class="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition">
         ${index > 0 ? `<button type="button" class="btn-shift-left hover:scale-125 px-1 text-[11px] font-bold" title="Geser ke Urutan Sebelumnya">◀</button>` : ''}
         ${index < phones.length - 1 ? `<button type="button" class="btn-shift-right hover:scale-125 px-1 text-[11px] font-bold" title="Geser ke Urutan Selanjutnya">▶</button>` : ''}
+        <button type="button" class="btn-delete-pill hover:scale-125 px-1.5 py-0.5 rounded-md hover:bg-rose-500/20 text-rose-400 hover:text-rose-200 text-xs font-bold transition" title="Hapus nomor ${phone}">✕</button>
       </div>
     `;
 
     pill.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
-      if (target.closest('.btn-shift-left') || target.closest('.btn-shift-right')) {
+      if (
+        target.closest('.btn-shift-left') ||
+        target.closest('.btn-shift-right') ||
+        target.closest('.btn-delete-pill')
+      ) {
         return;
       }
       if (phone !== getActivePhone()) {
@@ -287,6 +322,12 @@ function renderSimCardsStrip(): void {
       e.stopPropagation();
       moveSessionOrder(phone, 'right');
       renderSimCardsStrip();
+    });
+
+    const btnDel = pill.querySelector('.btn-delete-pill');
+    btnDel?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openDeleteConfirmModal(phone);
     });
 
     pill.addEventListener('dragstart', (e) => {
@@ -651,13 +692,28 @@ btnSetFirst?.addEventListener('click', () => {
 btnLogout.addEventListener('click', () => {
   const active = getActivePhone();
   if (!active) return;
-  removeSession(active);
+  openDeleteConfirmModal(active);
+});
+
+btnCancelDelete.addEventListener('click', closeDeleteConfirmModal);
+
+modalDeleteConfirm.addEventListener('click', (e) => {
+  if (e.target === modalDeleteConfirm) closeDeleteConfirmModal();
+});
+
+btnConfirmDelete.addEventListener('click', () => {
+  if (!pendingDeletePhone) return;
+  const phoneToDelete = pendingDeletePhone;
+  closeDeleteConfirmModal();
+
+  removeSession(phoneToDelete);
   const remaining = getActivePhone();
   if (remaining) {
     loadActiveAccountDashboard(false);
+    showAlert(`Nomor ${phoneToDelete} berhasil dihapus dari perangkat.`, 'info');
   } else {
     showLoginScreen(false);
-    showAlert(`Nomor ${active} telah dihapus dari perangkat.`, 'info');
+    showAlert(`Nomor ${phoneToDelete} telah dihapus. Tidak ada kartu tersisa.`, 'info');
   }
 });
 

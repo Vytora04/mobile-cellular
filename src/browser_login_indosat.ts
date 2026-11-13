@@ -214,8 +214,19 @@ export async function startIndosatBrowserLogin(targetPhone?: string): Promise<bo
       }
     });
 
+    // Cegah error S3 NoSuchKey jika URL diketik/direfresh ke /login tanpa hash (#)
+    page.on('framenavigated', async (frame) => {
+      if (frame === page.mainFrame()) {
+        const currentUrl = frame.url();
+        if (currentUrl.endsWith('myim3.ioh.co.id/login')) {
+          console.log('\n⚠️ Terdeteksi URL /login tanpa hash (#). Mengalihkan kembali ke https://myim3.ioh.co.id/#/login ...');
+          await page.goto('https://myim3.ioh.co.id/#/login').catch(() => {});
+        }
+      }
+    });
+
     // Buka halaman utama myIM3 (SPA akan memuat dan merender form login)
-    page.goto('https://myim3.ioh.co.id/', {
+    page.goto('https://myim3.ioh.co.id/#/login', {
       waitUntil: 'domcontentloaded',
       timeout: 60000,
     }).catch((err) => {
